@@ -41,7 +41,7 @@ jobs:
     - name: Build & Push Backend
       working-directory: ./backend
       run: |
-        IMAGE_TAG="${{ inputs.region }}-docker.pkg.dev/${{ inputs.project_id }}/fastapi-backend-repo/fastapi:latest"
+        IMAGE_TAG="${{ inputs.region }}-docker.pkg.dev/${{ inputs.project_id }}/demo-project-fastapi-backend-repo/fastapi:latest"
         echo "Building and pushing Backend Image: $IMAGE_TAG"
         docker build -t $IMAGE_TAG .
         docker push $IMAGE_TAG
@@ -50,7 +50,7 @@ jobs:
     - name: Build & Push Frontend
       working-directory: ./frontend
       run: |
-        IMAGE_TAG="${{ inputs.region }}-docker.pkg.dev/${{ inputs.project_id }}/streamlit-frontend-repo/streamlit:latest"
+        IMAGE_TAG="${{ inputs.region }}-docker.pkg.dev/${{ inputs.project_id }}/demo-project-streamlit-frontend-repo/streamlit:latest"
         echo "Building and pushing Frontend Image: $IMAGE_TAG"
         docker build -t $IMAGE_TAG .
         docker push $IMAGE_TAG

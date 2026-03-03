@@ -6,7 +6,7 @@ on:
       project_id:
         description: 'GCP Project ID'
         required: true
-        default: 'demo-project-streamlit-fastapi'
+        default: 'concise-wharf-489101-e0'
       region:
         description: 'GCP Region'
         required: true
@@ -14,7 +14,7 @@ on:
       gcs_bucket_name:
         description: 'GCS State Bucket Name'
         required: true
-        default: 'demo-project-streamlit-fastap-gcs-bucket'
+        default: 'demo-streamlit-fastapi-gcs-bucket'
       action:
         description: 'Terraform Action to Perform'
         required: true

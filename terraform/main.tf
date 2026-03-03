@@ -1,7 +1,7 @@
 
 # 1. SA IAM Identity for the Streamlit Frontend
 resource "google_service_account" "frontend_sa" {
-  account_id   = "streamlit-frontend-service-account"
+  account_id   = "streamlit-frontend-sa"
   display_name = "Identity for Streamlit Frontend when it invokes backend Fastapi"
 }
 
@@ -11,7 +11,7 @@ module "backend_api" {
   project_id            = var.project_id
   region                = var.region
   service_name          = "fastapi-backend"
-  image                 = "${var.region}-docker.pkg.dev/${var.project_id}/${module.backend_registry.repository_id}/fastapi:latest"
+  image                 = "${var.region}-docker.pkg.dev/${var.project_id}/demo-project-fastapi-backend-repo/fastapi:latest"
   allow_unauthenticated = false # LOCKED DOWN (No Internert Access)
 }
 
@@ -31,7 +31,7 @@ module "frontend_ui" {
   project_id            = var.project_id
   region                = var.region
   service_name          = "streamlit-frontend"
-  image                 = "${var.region}-docker.pkg.dev/${var.project_id}/${module.frontend_registry.repository_id}/streamlit:latest"
+  image                 = "${var.region}-docker.pkg.dev/${var.project_id}/demo-project-streamlit-frontend-repo/streamlit:latest"
   allow_unauthenticated = true # PUBLIC , Internet facing
   service_account_email = google_service_account.frontend_sa.email
   

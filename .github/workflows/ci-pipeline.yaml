@@ -1,0 +1,46 @@
+name: 'Build and Push Docker Images'
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_id:
+        description: 'GCP Project ID'
+        required: true
+        default: 'demo-project-streamlit-fastapi'
+      region:
+        description: 'GCP Region'
+        required: true
+        default: 'us-east1'
+
+jobs:
+  build-and-push:
+    name: 'Build & Push to Artifact Registry'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # 1. Authenticate to GCP using the JSON Secret
+    - name: Authenticate to Google Cloud
+      id: auth
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+    # 2. Set up Google Cloud SDK (Needed for gcloud auth)
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+
+    # 3. Configure Docker to authenticate with GCP Artifact Registry
+    - name: Configure Docker Auth
+      run: |
+        gcloud auth configure-docker ${{ inputs.region }}-docker.pkg.dev --quiet
+
+    # 4. Build and Push FastAPI Backend Image
+    - name: Build & Push Backend
+      working-directory: ./backend
+      run: |
+        IMAGE_TAG="${{ inputs.region }}-docker.pkg.dev/${{ inputs.project_id }}/fastapi-backend-repo/fastapi:latest"
+        echo "Building and pushing Backend Image: $IMAGE_TAG"
+        docker build -t $

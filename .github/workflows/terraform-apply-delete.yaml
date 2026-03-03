@@ -1,0 +1,83 @@
+name: 'Terraform Infrastructure Create/Destroy'
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_id:
+        description: 'GCP Project ID'
+        required: true
+        default: 'demo-project-streamlit-fastapi'
+      region:
+        description: 'GCP Region'
+        required: true
+        default: 'us-east1'
+      gcs_bucket_name:
+        description: 'GCS State Bucket Name'
+        required: true
+        default: 'demo-project-streamlit-fastap-gcs-bucket'
+      action:
+        description: 'Terraform Action to Perform'
+        required: true
+        type: choice
+        options:
+          - apply
+          - destroy
+        default: 'apply'
+
+jobs:
+  terraform:
+    name: 'Terraform ${{ inputs.action }}'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./terraform
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    # 1. Authenticate to GCP using the JSON Secret
+    - name: Authenticate to Google Cloud
+      id: auth
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+    # 2. Setup Terraform
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    # 3. Dynamically Generate the .tfvars file
+    - name: Generate terraform.tfvars
+      run: |
+        cat <<EOF > terraform.tfvars
+        project_id = "${{ inputs.project_id }}"
+        region     = "${{ inputs.region }}"
+        EOF
+        echo "Generated terraform.tfvars:"
+        cat terraform.tfvars
+
+    # 4. Initialize Terraform with the dynamic GCS State Bucket
+    - name: Terraform Init
+      run: |
+        terraform init \
+          -backend-config="bucket=${{ inputs.gcs_bucket_name }}" \
+          -backend-config="prefix=terraform/state"
+
+    # 5. Validate the Terraform Configuration
+    - name: Terraform Validate
+      run: terraform validate
+
+    # 6. Plan and Apply (Executes ONLY if action is 'apply')
+    - name: Terraform Plan
+      if: inputs.action == 'apply'
+      run: terraform plan -out=tfplan
+
+    - name: Terraform Apply
+      if: inputs.action == 'apply'
+      run: terraform apply -auto-approve tfplan
+
+    # 7. Destroy (Executes ONLY if action is 'destroy')
+    - name: Terraform Destroy
+      if: inputs.action == 'destroy'
+      run: terraform destroy -auto-approve

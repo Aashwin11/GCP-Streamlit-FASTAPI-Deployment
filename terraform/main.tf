@@ -5,6 +5,12 @@ resource "google_service_account" "frontend_sa" {
   display_name = "Identity for Streamlit Frontend when it invokes backend Fastapi"
 }
 
+# 1.5 NEW: SA IAM Identity for the FastAPI Backend
+resource "google_service_account" "backend_sa" {
+  account_id   = "fastapi-backend-sa"
+  display_name = "Identity for the FastAPI Backend"
+}
+
 # 2. Deploy the FastAPI Backend (No internet Access)
 module "backend_api" {
   source                = "./modules/cloud_run"
@@ -13,6 +19,7 @@ module "backend_api" {
   service_name          = "fastapi-backend"
   image                 = "${var.region}-docker.pkg.dev/${var.project_id}/demo-project-fastapi-backend-repo/fastapi:latest"
   allow_unauthenticated = false # LOCKED DOWN (No Internert Access)
+  service_account_email = google_service_account.backend_sa.email
 }
 
 # 3. Communication between Frontend and Backend using Invoker, 

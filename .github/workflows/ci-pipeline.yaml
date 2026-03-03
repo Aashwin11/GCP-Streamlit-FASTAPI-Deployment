@@ -6,7 +6,7 @@ on:
       project_id:
         description: 'GCP Project ID'
         required: true
-        default: 'demo-project-streamlit-fastapi'
+        default: 'concise-wharf-489101-e0' #Note: the name of the project can differ from the core project name, make sure to check it
       region:
         description: 'GCP Region'
         required: true

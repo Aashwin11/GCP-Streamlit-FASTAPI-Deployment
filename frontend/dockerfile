@@ -10,7 +10,7 @@ EXPOSE 8080
 ENV PYTHONUNBUFFERED True
 
 WORKDIR /app
-COPY main.py .
+COPY . . 
 CMD streamlit run main.py \
-    --server.c="0.0.0.0" \
+    --server.address="0.0.0.0" \
     --server.port="8080"

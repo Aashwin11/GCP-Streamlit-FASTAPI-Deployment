@@ -5,7 +5,7 @@ resource "google_service_account" "frontend_sa" {
   display_name = "Identity for Streamlit Frontend when it invokes backend Fastapi"
 }
 
-# 1.5 NEW: SA IAM Identity for the FastAPI Backend
+#  SA IAM Identity for the FastAPI Backend
 resource "google_service_account" "backend_sa" {
   account_id   = "fastapi-backend-sa"
   display_name = "Identity for the FastAPI Backend"
